@@ -5,17 +5,18 @@ compiler:
   - gcc
   - clang
 
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq gsl-bin libgsl0-dev
-
 env:
   global:
    # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
    #   via the "travis encrypt" command using the project repo's public key
    - secure: "1AVqNNPbsYH2CFUZBXeKPDroFtAJFeSowXuYE4LfbHrUD8FX0M6WYVmiWqztReTnmPmPuMmd3b4gvauCfXD1ZZEora18i2VDD+yGb5X5GmG3uXO+/WwnlBBVHHtTBsG6nz1aUUAZ8WwhNAevE+VBn1J+OkCByLfNdUKMQ3O/C8QkhrzPrBK5jVmnI1uAWgtNtAIx2RnTUE49G2cWPih1Orw8cBmKgH08vdTWcpCX4fpViD8LLB5OO6kqPkrcAilgRGSXIrJRfVkbVcgg3ggWw7CivPzwDQhW9l92c3oQneDVV09LgOI/PAd4FJYWJxtjNdPZsa8oS4ur0+IDdMcOqncj5rgtQr3EOx4AxUAovE90FjDYyDB+TGWZ6BSy3jxSx21lsyE0pCLgWrsNtK/8/v69yXR4cLAiOojJEJVBGXjyxUDEoQyqg5TtjD9fr22YXTzV86Uoe7KOAB3wGIgmVaXW8ndGFNVXh8JBjTrE7jYajEEeELd2ieEdA/9W5WOAFVvXUUVWuzFRukLYfz+ZWFfWZCgIx9UMCp9YE3C2qQenYRGrlB84fX7NbUW2tz1vTyLO4COm+WpFaj8kmO2Eaz9vRnj0QDQkiyFO4KWlqtK8QEBrZ5n/ckUwFzWXRr+EfeFzRQk7y5w9IHzjJmRMTtYiwZaDmvh00J/b3P9AQp4="
 
+	 
 addons:
+  apt:
+	  packages:
+         - gsl
+
   coverity_scan:
     project:
       name: "manodeep/Corrfunc"
@@ -24,3 +25,5 @@ addons:
     build_command_prepend: "make distclean"
     build_command:   "make -j4 && make install"
     branch_pattern: coverity_scan
+
+script: make tests 
