@@ -1,0 +1,153 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Corrfunc by manodeep</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Corrfunc</h1>
+        <p>Blazing fast correlation functions on the CPU</p>
+
+        <p class="view"><a href="https://github.com/manodeep/Corrfunc">View the Project on GitHub <small>manodeep/Corrfunc</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/manodeep/Corrfunc/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/manodeep/Corrfunc/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/manodeep/Corrfunc">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="description" class="anchor" href="#description" aria-hidden="true"><span class="octicon octicon-link"></span></a>Description</h1>
+
+<p>This repo contains a set of codes to measure the following OpenMP parallelized clustering 
+measures in a cosmological box (co-moving XYZ) or on a mock (RA, DEC, CZ). Also, 
+contains the associated paper to be published in Astronomy &amp; Computing Journal (at some point). </p>
+
+<h2>
+<a id="clustering-measures-on-a-cosmological-box" class="anchor" href="#clustering-measures-on-a-cosmological-box" aria-hidden="true"><span class="octicon octicon-link"></span></a>Clustering Measures on a Cosmological box</h2>
+
+<p>All codes that work on cosmological boxes with co-moving positions are located in the 
+<code>xi_theory</code> directory. The various clustering measures are:</p>
+
+<ol>
+<li><p><code>xi_of_r</code> -- Measures auto/cross-correlations between two boxes. The boxes do not need to be cubes.</p></li>
+<li><p><code>xi</code> -- Measures 3-d auto-correlation in a cubic cosmological box. Assumes PERIODIC boundary conditions.</p></li>
+<li><p><code>wp</code> -- Measures auto 2-d point projected correlation function in a cubic cosmological box. Assumes PERIODIC boundary conditions. </p></li>
+<li><p><code>xi_rp_pi</code> -- Measures the auto/cross correlation function between two boxes. The boxes do not need to be cubes. </p></li>
+<li><p><code>vpf</code> -- Measures the void probability function + counts-in-cells. </p></li>
+</ol>
+
+<h2>
+<a id="clustering-measures-on-a-mock" class="anchor" href="#clustering-measures-on-a-mock" aria-hidden="true"><span class="octicon octicon-link"></span></a>Clustering measures on a Mock</h2>
+
+<p>All codes that work on mock catalogs (RA, DEC, CZ) are located in the <code>xi_mocks</code> directory. The
+various clustering measures are:</p>
+
+<ol>
+<li><p><code>DDrppi</code> -- The standard auto/cross correlation between two data sets. The outputs, DD, DR and RR
+can be combined using <code>wprp</code> to produce the Landy-Szalay estimator for $w_p(r_p)$. </p></li>
+<li><p><code>wtheta</code> -- Computes angular correlation function between two data sets. The outputs from 
+<code>DDtheta_mocks</code> need to be combined with <code>wtheta</code> to get the full $\omega(\theta)$</p></li>
+<li><p><code>vpf</code> -- Computes the void probability function on mocks. </p></li>
+</ol>
+
+<h1>
+<a id="science-options" class="anchor" href="#science-options" aria-hidden="true"><span class="octicon octicon-link"></span></a>Science options</h1>
+
+<ol>
+<li><p>PERIODIC (ignored in case of wp/xi) -- switches PERIODIC boundary
+conditions on/off. Enabled by default. </p></li>
+<li><p>OUTPUT_RPAVG -- switches on output of <rp> in each <code>rp</code> bin. Can be
+a massive performance hit (~ 2.2x in case of wp). Disabled by default.
+Needs code option DOUBLE_PREC to be enabled as well. For the mocks, 
+OUTPUT_RPAVG causes only a mild increase in runtime and is enabled by 
+default.</rp></p></li>
+<li><p>OUTPUT_THETAAVG -- switches on output of  in each theta bin. 
+Can be extremely slow (~5x) depending on compiler, and CPU capabilities. 
+Disabled by default. </p></li>
+</ol>
+
+<h2>
+<a id="mocks" class="anchor" href="#mocks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Mocks</h2>
+
+<ol>
+<li><p>LINK_IN_DEC -- creates binning in declination for mocks. Please check that for 
+your desired binning in $r_p$/$\theta$, this binning does not produce incorrect 
+results (due to numerical precision). </p></li>
+<li><p>LINK_IN_RA -- creates binning in RA once binning in DEC has been enabled. Same 
+numerical issues as LINK_IN_DEC</p></li>
+<li><p>FAST_DIVIDE --  Divisions are slow but required $DD(r_p,\pi)$. This Makefile
+option (in mocks.options) replaces the divisions to a reciprocal followed by a 
+Newton-Raphson. The code will run ~20% faster at the expense of some numerical precision. 
+Please check that the loss of precision is not important for your use-case. Also, note 
+that the mocks tests for $DD(r_p, \pi)$<em>will fail</em> if you enable FAST_DIVIDE. </p></li>
+</ol>
+
+<h1>
+<a id="common-code-options-for-both-mocks-and-cosmological-boxes" class="anchor" href="#common-code-options-for-both-mocks-and-cosmological-boxes" aria-hidden="true"><span class="octicon octicon-link"></span></a>Common Code options for both Mocks and Cosmological Boxes</h1>
+
+<ol>
+<li><p>DOUBLE_PREC -- does the calculations in double precision. Disabled
+by default. </p></li>
+<li><p>USE_AVX -- uses the AVX instruction set found in Intel/AMD CPUs &gt;= 2011
+(Intel: Sandy Bridge or later; AMD: Bulldozer or later). Enabled by
+default - code will not compile if the CPU does not support AVX instructions.
+On Linux, check for "avx" in /proc/cpuinfo under flags. If you do not have
+AVX, but have a SSE4 system instead, email me - I will send you a copy of
+the code with SSE4 intrinsics. Or, take the relevant SSE code from the public repo at 
+<a href="https://bitbucket.org/manodeep/pairwise">pairwise</a>.</p></li>
+<li><p>USE_OMP -- uses OpenMP parallelization. Scaling is great for DD (perfect scaling
+up to 12 threads in my tests) and okay (runtime becomes constant ~6-8 threads in
+my tests) for DDrppi and wp. </p></li>
+</ol>
+
+<p><em>Optimization for your architecture</em></p>
+
+<ol>
+<li><p>The values of bin_refine_factor and/or zbin_refine_factor in the countpairs_*.c
+files control the cache-misses, and consequently, the runtime. In my trial-and-error
+methods, I have seen any values larger than 3 are always slower. But some different
+combination of 1/2 for (z)bin_refine_factor might be faster on your platform. </p></li>
+<li><p>If you have AVX2/AVX-512/KNC, you will need to rewrite the entire AVX section.</p></li>
+</ol>
+
+<h1>
+<a id="author" class="anchor" href="#author" aria-hidden="true"><span class="octicon octicon-link"></span></a>Author</h1>
+
+<p>Pairwise is written/maintained by Manodeep Sinha. Please contact the <a href="mailto:manodeep@gmail.com">author</a> in
+case of any issues.</p>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>LICENSE</h1>
+
+<p>Corrfunc is released under the MIT license. Basically, do what you want
+with the code including using it in commercial application.</p>
+
+<h1>
+<a id="project-url" class="anchor" href="#project-url" aria-hidden="true"><span class="octicon octicon-link"></span></a>Project URL</h1>
+
+<ul>
+<li>version control (<a href="https://github.com/manodeep/corrfunc">https://github.com/manodeep/corrfunc</a>)</li>
+</ul>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/manodeep">manodeep</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
