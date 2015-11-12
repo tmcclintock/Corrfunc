@@ -26,4 +26,4 @@ addons:
     build_command:   "make -j4 && make install"
     branch_pattern: coverity_scan
 
-script: make tests 
+script: if [ "${COVERITY_SCAN_BRANCH}" != 1 ]; then make tests ; fi
